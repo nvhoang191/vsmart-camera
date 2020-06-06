@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btn_open_camera"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_margin="25dp"
+        android:background="@drawable/btn_primary_form"
+        android:text="@string/open_camera"
+        android:textSize="20sp"
+        android:drawableStart="@drawable/ic_camera"
+        android:drawableLeft="@drawable/ic_camera"
+        android:drawablePadding="15dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:gravity="fill_vertical"
+        android:stateListAnimator="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        style="@style/ButtonTheme" />
+
+</android.support.constraint.ConstraintLayout>
