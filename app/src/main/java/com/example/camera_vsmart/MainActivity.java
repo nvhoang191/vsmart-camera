@@ -11,7 +11,7 @@ import com.example.camera_vsmart.CameraActivity.CameraScreen;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final int REQUEST_IMAGE_CAPTURE = 123;
+    // Thủy ơi giờ t có main activity này rồi, có button click vào là trỏ sang màn camera, ô xem giúp t nhé
     private Button btnOpenCamera;
 
     @Override

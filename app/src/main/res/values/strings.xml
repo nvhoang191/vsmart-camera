@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Camera-vSmart</string>
     <string name="open_camera">Open Camera</string>
+    <!--capture screen-->
+    <string name="cant_write_photo">Can\'t write photo</string>
+    <string name="no_camera_permission">Can\'t open camera without granting permission</string>
+    <string name="camera_config_fail">Can\'t open camera</string>
+    <string name="take_photo_error">Write photo failed. Try capturing again.</string>
+    <string name="capture_completed">Capture completed.</string>
+    <string name="camera_action_failed">Camera failed. Try reopening camera</string>
 </resources>
