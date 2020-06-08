@@ -1,32 +1,23 @@
 package com.example.camera_vsmart.CameraActivity;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Size;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.camera_vsmart.AppConstants;
-import com.example.camera_vsmart.DataManager;
-import com.example.camera_vsmart.DebugLog;
-import com.example.camera_vsmart.PreferencesUtil;
+import com.example.camera_vsmart.Utils.AppConstants;
+import com.example.camera_vsmart.Utils.DataManager;
+import com.example.camera_vsmart.Utils.DebugLog;
 import com.example.camera_vsmart.R;
 
 public class CameraScreen extends AppCompatActivity implements ICameraContract.IViewListener, View.OnClickListener {
@@ -92,8 +83,6 @@ public class CameraScreen extends AppCompatActivity implements ICameraContract.I
                 takePhoto();
                 break;
             }
-
-            // thay doi trang thai den flash
             case R.id.btn_flash_mode: {
                 switch (mFlashMode) {
                     case AppConstants.CameraConfig.MODE_FLASH_OFF: {
@@ -126,8 +115,6 @@ public class CameraScreen extends AppCompatActivity implements ICameraContract.I
 
     }
 
-
-    // cai nay nhìn ngu ngu nhưng mà lúc mới bật camera phải hiện icon trạng thái flash
     private void setFlash() {
         switch (mFlashMode) {
             case AppConstants.CameraConfig.MODE_FLASH_ON: {
@@ -164,9 +151,6 @@ public class CameraScreen extends AppCompatActivity implements ICameraContract.I
         }
     }
 
-    // cái này là màn hình mà pause là giải phóng camera luôn
-    // hình như chống nóng máy
-    // mà ko biết cái chống chụp trộm trên điện thoại thì nó có tự động giải phóng không nữa
     @Override
     protected void onPause() {
 //        if (mCountDownTimer != null) {
@@ -176,16 +160,6 @@ public class CameraScreen extends AppCompatActivity implements ICameraContract.I
         mPresenter.stopBackgroundThread();
         super.onPause();
         finish();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == AppConstants.CameraConfig.REQUEST_CAMERA_PERMISSION) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(this, R.string.no_camera_permission, Toast.LENGTH_LONG).show();
-                finish();
-            }
-        }
     }
 
     private TextureView.SurfaceTextureListener getSurfaceTextureListener() {
@@ -220,7 +194,7 @@ public class CameraScreen extends AppCompatActivity implements ICameraContract.I
     @Override
     public void onCaptureCompleted(String imgName) {
         if (mWritePicCompleted) {
-            //openDataScreen(imgName);
+            previewPhoto(imgName);
         } else {
             mCaptureCompleted = true;
         }
@@ -230,36 +204,24 @@ public class CameraScreen extends AppCompatActivity implements ICameraContract.I
     @Override
     public void onWritePicCompleted(String imgName) {
         if (mCaptureCompleted) {
-            // giờ t thêm cái Intent chuyển qua màn preview ở đây là đc hả
-            //openDataScreen(imgName);
+            previewPhoto(imgName);
         } else {
             mWritePicCompleted = true;
         }
     }
 
-//    private void openDataScreen(String imgName) {
-//        if (null != imgName) { // Kiểm tra đã tên file ảnh lấy được
-//            DebugLog.d("capture complete");
-//            //Intent intent = new Intent(this, OCRDataScreen.class);
-    // ở đây - OK
-    // ko
-    // cái kia là chụp xong rồi.
-    // nên là truyền tên file xong get trong bộ nhớ ra thôi
-    // à bên này gửi tên file
-    // bên kia sẽ nhận tên file mà lấy từ bộ nhớ hiển thị ra à?
-    // chuẩn. 2 cái hàm bên trên onWrite... với onCap... là để đảm bảo ghi xong ảnh với camera về trạng thái ban đầu ấy
-    // OK
-    // cái màn preview của ông là cái này à
-    // đang thử chạy xem đc ko :D
-//            Intent intent = new Intent(this, OCRDataScreen.class);
-//            intent.putExtra(AppConstants.Common.IMG_NAME, imgName);
-//            startActivity(intent);
-//            finish();
-//        } else {
-//            Toast.makeText(this, R.string.cant_write_photo, Toast.LENGTH_SHORT).show();
-//        }
-//        finish();
-//    }
+    private void previewPhoto(String imgName) {
+        if (imgName != null) {
+            DebugLog.d("Preview photo");
+            Intent intent = new Intent(this, PreviewScreen.class);
+            intent.putExtra(AppConstants.Common.IMG_NAME, imgName);
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, R.string.cant_write_photo, Toast.LENGTH_SHORT).show();
+        }
+        finish();
+    }
 
     @Override
     public void onConfigCameraComplete() {
@@ -274,14 +236,6 @@ public class CameraScreen extends AppCompatActivity implements ICameraContract.I
 //        }
     }
 
-    // cái timer này là xử lý cái gì đấy Thủy ơi?
-    // cái này là cái bật tự động chụp
-    // bạn mở màn hình camera ra là nó đếm ngược xong nó tự lấy nét tự chụp ko cần click
-    // à oke
-    // app này trc có option lưu có tự động chụp khi lấy nét hay không đấy nhỉ
-    // ok :D
-    // lưu trong màn hình bạn làm :3
-    // ừ nhớ rồi
 //    private CountDownTimer mCountDownTimer;
 
 //    private void autoCapture() {

@@ -39,10 +39,10 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.file.FileSystemDirectory;
 import com.drew.metadata.file.FileTypeDirectory;
 import com.drew.metadata.jpeg.JpegDirectory;
-import com.example.camera_vsmart.AppConstants;
-import com.example.camera_vsmart.AppUtils;
-import com.example.camera_vsmart.DataManager;
-import com.example.camera_vsmart.DebugLog;
+import com.example.camera_vsmart.Utils.AppConstants;
+import com.example.camera_vsmart.Utils.AppUtils;
+import com.example.camera_vsmart.Utils.DataManager;
+import com.example.camera_vsmart.Utils.DebugLog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -90,7 +90,6 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
 
     private boolean mLockedFocus;
 
-    // này là hướng theo cái sensor
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray(4);
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -99,8 +98,6 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-    // CÁI NÀY LÀ SAO? SEMPAPHORE Ý
-    // để đảm bảo các bước trước thục hiện xong mới thực hiện cái tiếp theo thì phải
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
     private boolean mMeteringAreaAFSupported;
@@ -110,8 +107,6 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
         this.mViewListener = listener;
     }
 
-    // à thủy ơi hiện tại ảnh chụp xong thì logic xử lý tn thế?
-    // chụp ảnh ảnh đi đâu?
     public void openCamera() {
         if (!checkCameraPermission()) {
             return;
@@ -190,11 +185,11 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
 
                 Calendar calendar = Calendar.getInstance();
                 DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
-                mImgName = "img_" + dateFormat.format(calendar.getTime()) + ".jpg";
-                DebugLog.d("create file " + mImgName);
+                mImgName = "IMG_" + dateFormat.format(calendar.getTime()) + ".jpg";
+                DebugLog.d("Created file " + mImgName);
 
-                mHandler.post(new ImageSaver(image, createFile(mImgName), mViewListener)); // dđây hả
-                mViewListener.onWritePicCompleted(mImgName); // lưu ảnh chỗ nào thế nhỉ
+                mHandler.post(new ImageSaver(image, createFile(mImgName), mViewListener));
+                mViewListener.onWritePicCompleted(mImgName);
             }
         }, mHandler);
     }
@@ -209,7 +204,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
 
         @Override
         public void onDisconnected(@NotNull CameraDevice camera) {
-            DebugLog.d("Disconnected Camera. Try re-opening");
+            DebugLog.d("Disconnected Camera. Try opening camera again.");
             mViewListener.onCameraFailed();
         }
 
@@ -219,8 +214,6 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
         }
     };
 
-    // nếu giờ chụp xong t muốn chuyển qua màn preview ảnh thì thêm cái Intent đó ở đâu nhỉ
-    // hình như là cái chỗ chuyển qua màn OCRDATA ý
     @Override
     public void takePhoto() {
         try {
@@ -242,7 +235,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
         mHandlerThread = new HandlerThread(NAME_HANDLER_THREAD);
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
-        DebugLog.d("start background thread");
+        DebugLog.d("Start background thread");
     }
 
     @Override
@@ -256,11 +249,9 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
             e.printStackTrace();
         }
 
-        DebugLog.d("stop background thread");
+        DebugLog.d("Stop background thread");
     }
 
-
-    // này này - ok
     @Override
     public void closeCamera() {
         try {
@@ -277,7 +268,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
                 mImageReader.close();
                 mImageReader = null;
             }
-            DebugLog.d("close camera");
+            DebugLog.d("Closed camera");
         } catch (InterruptedException e) {
             DebugLog.d("Interrupted while trying to lock camera closing");
         } finally {
@@ -530,8 +521,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
             DebugLog.d(mFile.toString());
         }
 
-        // giờ t muốn chụp xong nó nhảy qua màn xem lại ảnh thì làm tn
-        // t thấy code cũ của ông có preview photo
+
         @Override
         public void run() {
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
@@ -540,7 +530,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
             FileOutputStream output = null;
             try {
                 output = new FileOutputStream(mFile);
-                output.write(bytes); // lưu đây nhỉ - hình như thế :v - đúng rồi, write mà :D
+                output.write(bytes);
                 output.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -588,7 +578,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
                     DebugLog.d(e.getMessage());
                 }
                 DataManager.getInstance().setExifImage(hash);
-                DebugLog.d("exif: " + DataManager.getInstance().getExifImage());
+                DebugLog.d("Exif Image: " + DataManager.getInstance().getExifImage());
 
 
             } catch (IOException | ImageProcessingException e) {
@@ -606,7 +596,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
             mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
             mCaptureBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
             mCameraCaptureSession.capture(mCaptureBuilder.build(), mCaptureCallBack, mHandler);
-            DebugLog.d("on flash on");
+            DebugLog.d("Set flash ON");
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -620,7 +610,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
             mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON);
             mCaptureBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
             mCameraCaptureSession.capture(mCaptureBuilder.build(), mCaptureCallBack, mHandler);
-            DebugLog.d("on flash off");
+            DebugLog.d("Set flash OFF");
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -633,7 +623,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
             mFlashMode = AppConstants.CameraConfig.MODE_FLASH_AUTO;
             mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
             mCameraCaptureSession.capture(mCaptureBuilder.build(), mCaptureCallBack, mHandler);
-            DebugLog.d("on flash auto");
+            DebugLog.d("Set flash AUTO");
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -681,8 +671,7 @@ public class CameraScreenPresenter implements ICameraContract.IPresenterAction {
 
     @Override
     public void regionsFocus(Rect touchRect) {
-        MeteringRectangle focusAreaTouch = new MeteringRectangle(touchRect
-                , MeteringRectangle.METERING_WEIGHT_MAX - 1);
+        MeteringRectangle focusAreaTouch = new MeteringRectangle(touchRect, MeteringRectangle.METERING_WEIGHT_MAX - 1);
         try {
             CameraCaptureSession.CaptureCallback captureCallbackHandler = new CameraCaptureSession.CaptureCallback() {
                 @Override

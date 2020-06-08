@@ -1,9 +1,9 @@
-package com.example.camera_vsmart;
+package com.example.camera_vsmart.Utils;
 
 import android.content.Context;
 import android.util.Size;
+
 import java.util.Hashtable;
-import java.util.List;
 
 /**
  * Singleton pattern
@@ -12,10 +12,8 @@ import java.util.List;
 public class DataManager {
     private static volatile DataManager sInstance = null;
     private Context mContext = null;
-    private List<String> mCustomerSuggestions;
 
     private Size mScreenResolution = null;
-    private Size mFrameResolution = null;
     private Hashtable<String, String> mExifImage = null;
 
     private DataManager() {
@@ -44,13 +42,6 @@ public class DataManager {
         return mScreenResolution;
     }
 
-    public synchronized void updateFrameResolution(Size size) {
-        mFrameResolution = size;
-    }
-
-    public synchronized Size getFrameResolution() {
-        return mFrameResolution;
-    }
 
     public synchronized void setExifImage(Hashtable<String, String> hash) {
         mExifImage = hash;

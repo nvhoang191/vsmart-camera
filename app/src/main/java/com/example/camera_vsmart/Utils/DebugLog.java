@@ -1,4 +1,4 @@
-package com.example.camera_vsmart;
+package com.example.camera_vsmart.Utils;
 
 import android.util.Log;
 

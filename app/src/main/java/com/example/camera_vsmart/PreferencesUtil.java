@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.example.camera_vsmart.Utils.DebugLog;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

@@ -6,10 +6,10 @@ import android.graphics.SurfaceTexture;
 public interface ICameraContract {
     interface IViewListener {
         SurfaceTexture getCameraPreview();
-        void onCaptureCompleted(String imgName); // gọi sau khi chụp xong ảnh
+        void onCaptureCompleted(String imgName); // called after capturing
         void onWritePicCompleted(String imgName);
         void onWritePicFailed();
-        void onConfigCameraComplete(); // gọi sau khi cài đặt xong cấu hình camera
+        void onConfigCameraComplete(); // called after configuring camera
         void onCameraFailed();
     }
 
